@@ -31,6 +31,8 @@ public class Main {
 
     public static void main(String[] args) {
 
+
+
         //1) stampo messaggio di benvenuto e lancio il ciclo while
 
         System.out.println("Welcome to your Task Manger!");
@@ -43,6 +45,8 @@ public class Main {
 
             //getting command from user, can it be encapsulated in a method perhaps?
            String command = getCommandFromUser();
+            CommandSyntaxVerifier commandSyntaxVerifier = new CommandSyntaxVerifier(command);
+           System.out.println(commandSyntaxVerifier.isSyntaxCorrect(command));
 
             if(command == null){
                 System.out.println("Please enter again your next action");
@@ -99,29 +103,20 @@ public class Main {
                 case "list":
                     OperationHandler.listAllTasks();
                     break;
-
                 default:
                     System.out.println("Invalid command! Try again!");
                     continue;
             }
             //4) Si chiede all'utente se desidera uscire, altrimenti si rinizia con il prossimo comando
             System.out.println("Do you wish to exit? Type Y to confirm");
-            //handle user wish to exit
+
             String wish = getCommandFromUser();
             if(wish.equals("Y"))
                 break;
             else
-                continue;
-
-
-
-
+                System.out.println("Please select your next action!");
 
         }
-
-
-
-
 
     }
 
