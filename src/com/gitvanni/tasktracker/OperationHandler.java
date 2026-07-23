@@ -152,7 +152,7 @@ public class OperationHandler {
         //open file
         String fileName = getFileName();
         try {
-            FileWriter writer = new FileWriter(fileName,true);
+            FileWriter writer = new FileWriter(fileName,false);
             writer.write("[\n");
             writer.flush();
             writer.close();
@@ -239,6 +239,7 @@ public class OperationHandler {
             System.out.println("test exception");
         }
     }
+
     static void addTask(String description) {
         int id = getNextID();
         //TODO: validate string
@@ -254,15 +255,38 @@ public class OperationHandler {
         writeTask(description,id);
         addClosingIndent();
     }
-
+//TODO: This method uses the equals method of Task to look for the position within the list of the task to edit. Given so, I implemented the equals method as to compare only the id. Not sure if this is only a shortcut..
+    //TODO: the call to write task creates a new task, thus it is wrong as it cancels the former creation time. I  need to create another writeTask method that directly takes a task
     static boolean updateTask(int id, String description){
         //check if task id is present
         if(!isIDPresent(id))
             return false;
         //check if description is valid
+        List<Task> tasks = getTasks();
+        if(tasks == null)
+            return false;
 
-        //create a new task and store it?
-        //update the lastUpdated
+        Task toCompare = new Task(id,description);
+
+        int index = tasks.indexOf(toCompare);
+
+        //Edit the task and readd it to the list
+        Task toEdit = tasks.remove(index);
+        toEdit.setDescription(description);
+        toEdit.setUpdatedAt(LocalDateTime.now());
+        tasks.add(index,toEdit);
+
+
+        //Empty the file and rewrite all the tasks to it
+        addArrayIndent();
+        for(int i = 0; i<tasks.size()-1; i++){
+            writeTask(tasks.get(i).getDescription(),tasks.get(i).getId());
+            addComma();
+        }
+        writeTask(tasks.getLast().getDescription(),tasks.getLast().getId());
+        addClosingIndent();
+
+
         return true;
 
     }
@@ -299,15 +323,31 @@ public class OperationHandler {
        }
     }
 
+    //returns all the tasks starting with that index
+    static List<Task> getTasks(){
+        int numOfTasks = getNumOfTasks();
+        if(numOfTasks == 0)
+            return null;
+        else{
+            return reconstructTasks(numOfTasks);
+        }
+    }
+
     static void listTaskPerStatus(TaskStatus status){
         int numOfTasks = getNumOfTasks();
         if(numOfTasks == 0)
             System.out.println("There are no tasks!");
         else{
             List<Task> tasks = reconstructTasks(numOfTasks);
-            for(Task t : tasks){
-                if(t.getStatus().equals(status))
+            List<Task> tasksToReturn = tasks.stream().filter(t -> t.getStatus() == status).toList();
+            if(tasksToReturn.isEmpty()){
+                System.out.println("There are no tasks with such status");
+                return;
+            }
+            else{
+                for(Task t : tasksToReturn){
                     System.out.println(t);
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.gitvanni.tasktracker;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Formatter;
+import java.util.Objects;
 
 /**
  * This class represents a task to be done.
@@ -64,5 +65,25 @@ public class Task implements Serializable {
         formatter.format("}".indent(4));
         formatter.flush();
         return string.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

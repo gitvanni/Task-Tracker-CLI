@@ -89,7 +89,9 @@ public class Main {
                     OperationHandler.addTask(remaining);
                     break;
                 case "update":
-
+                    int id = Integer.parseInt(remaining.split(" ",2)[0]);
+                    String description = remaining.split(" ",2)[1];
+                    OperationHandler.updateTask(id,description);
                     break;
                 case "delete":
 
@@ -101,7 +103,23 @@ public class Main {
                     OperationHandler.reconstructTasks(2);
                     break;
                 case "list":
-                    OperationHandler.listAllTasks();
+                    if(remaining==null)
+                        OperationHandler.listAllTasks();
+                    else{
+                        switch (remaining){
+                            case "done":
+                                OperationHandler.listTaskPerStatus(TaskStatus.DONE);
+                                break;
+                            case "todo":
+                                OperationHandler.listTaskPerStatus(TaskStatus.TODO);
+                                break;
+                            case "in-progress":
+                                OperationHandler.listTaskPerStatus(TaskStatus.INPROGRESS);
+                                break;
+                            default:
+                                System.out.println("The specified status is invalid!");
+                        }
+                    }
                     break;
                 default:
                     System.out.println("Invalid command! Try again!");
